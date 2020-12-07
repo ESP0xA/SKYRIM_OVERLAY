@@ -372,10 +372,10 @@ DWORD WINAPI InitiateHooks(LPVOID param)
 {
 	//entityhook
 	DWORD entityAddy = FindPattern("TESV.exe",
-		"\x00\x00\x00", "xxx");
-	MsgBoxAddy(entityAddy);
-	//EntlistJmpBack = entityAddy + 0x6;
-	//PlaceJMP((BYTE*)entityAddy, (DWORD)entityhook, 6);
+		"\x8B\x56\x34\x8B\x46\x38\x8B\x4E\x3C\x8D\x7E\x34", "xxxxxxxxxxxx");
+	//MsgBoxAddy(entityAddy);
+	EntlistJmpBack = entityAddy + 0x6;
+	PlaceJMP((BYTE*)entityAddy, (DWORD)entityhook, 6);
 
 	return NULL;
 }
@@ -386,7 +386,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 	{
 		hInstance = hModule;
 		CreateThread(0, NULL, ThreadProc, (LPVOID)L"X", NULL, NULL);
-		//CreateThread(0, 0, InitiateHooks, 0, 0, 0);
+		CreateThread(0, 0, InitiateHooks, 0, 0, 0);
 	}
 	return TRUE;
 }
