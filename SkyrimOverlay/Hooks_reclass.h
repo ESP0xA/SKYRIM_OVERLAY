@@ -26,7 +26,6 @@ public:
 playerent * ents[255];
 playerent * entsptr;
 
-
 __declspec(naked) void entityhook()
 {
 	__asm {

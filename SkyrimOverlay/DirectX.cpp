@@ -19,7 +19,6 @@ bool bKeyPrev[255];
 
 bool bMenuEnabled = true;
 
-
 #define MENUITEMS 3
 bool bMenuItems[MENUITEMS];
 int iSelectedItem = 0;
@@ -260,7 +259,7 @@ void PlaceJMP(BYTE *Address, DWORD jumpTo, DWORD length = 5)
 	dwRelAddr = (DWORD)(jumpTo - (DWORD)Address) - 5;
 
 	// Write the JMP opcode @ our jump position...
-	*Address = 0xE9;
+	*Address = 0xE9; // first opcode in a jmp instruction 
 
 	// Write the offset to where we're gonna jump
 	//The instruction will then become JMP ff002123 for example
@@ -288,6 +287,10 @@ MODULEINFO GetModuleInfo(char *szModule)
 	return modinfo;
 }
 
+/*
+	DWORD entityAddy = FindPattern("TESV.exe",
+		"\x8B\x56\x34\x8B\x46\x38\x8B\x4E\x3C\x8D\x7E\x34", "xxxxxxxxxxxx");
+*/
 DWORD FindPattern(char *module, char *pattern, char *mask)
 {
 	//Get all module related information
@@ -301,7 +304,9 @@ DWORD FindPattern(char *module, char *pattern, char *mask)
 
 	//Get length for our mask, this will allow us to loop through our array
 	DWORD patternLength = (DWORD)strlen(mask);
-
+	std::cout << module << std::endl;
+	std::cout << pattern << std::endl;
+	std::cout << mask << std::endl;
 	for (DWORD i = 0; i < size - patternLength; i++)
 	{
 		bool found = true;
@@ -319,7 +324,6 @@ DWORD FindPattern(char *module, char *pattern, char *mask)
 			return base + i;
 		}
 	}
-
 	return NULL;
 }
 
@@ -364,19 +368,20 @@ DWORD WINAPI ThreadProc(LPVOID lpParam)
 		Sleep(1);
 		OverlayFunctions::GetTargetWindow();
 	}
-
 	return 0;
 }
 
+
 DWORD WINAPI InitiateHooks(LPVOID param)
 {
+	
 	//entityhook
-	DWORD entityAddy = FindPattern("TESV.exe",
-		"\x8B\x56\x34\x8B\x46\x38\x8B\x4E\x3C\x8D\x7E\x34", "xxxxxxxxxxxx");
+	DWORD entityAddy = FindPattern("TESV.exe", "\x8B\x56\x34\x8B\x46\x38\x8B\x4E\x3C\x8D\x7E\x34", "xxxxxxxxxxxx");
 	//MsgBoxAddy(entityAddy);
 	EntlistJmpBack = entityAddy + 0x6;
 	PlaceJMP((BYTE*)entityAddy, (DWORD)entityhook, 6);
-
+	
+	//std::cout << entityAddy << std::endl;
 	return NULL;
 }
 
